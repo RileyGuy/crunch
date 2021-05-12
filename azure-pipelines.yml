@@ -31,15 +31,15 @@ steps:
   inputs:
     script: 'tree /F /A'
 
-#- task: VSBuild@1
-#  inputs:
-#    solution: 'Assimp.sln'
-#    vsVersion: '16.0'
-#    platform: 'x64'
-#    configuration: 'release'
-#    maximumCpuCount: true
-#    msbuildArchitecture: 'x64'
-#  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+- task: VSBuild@1
+  inputs:
+    solution: 'crnlib.sln'
+    vsVersion: '16.0'
+    platform: 'x64'
+    configuration: 'release'
+    maximumCpuCount: true
+    msbuildArchitecture: 'x64'
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
 
 - task: PowerShell@2
   inputs:

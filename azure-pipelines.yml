@@ -3,13 +3,13 @@ trigger:
 
 strategy:
   matrix:
-    linux:
-      imageName: 'ubuntu-latest'
-      cmakeTarget: 'Unix Makefiles'
-      sourceFolder: 'bin/'
-      sourceFile: 'libassimp.so'
-      targetFile: 'Assimp64.so'
-      artifactName : 'linux_x64'
+    #linux:
+    #  imageName: 'ubuntu-latest'
+    #  cmakeTarget: 'Unix Makefiles'
+    #  sourceFolder: 'bin/'
+    #  sourceFile: 'libassimp.so'
+    #  targetFile: 'Assimp64.so'
+    #  artifactName : 'linux_x64'
     windows:
       imageName: 'windows-latest'
       cmakeTarget: 'Visual Studio 16 2019'
@@ -36,7 +36,7 @@ steps:
     solution: 'crnlib.sln'
     vsVersion: '16.0'
     platform: 'x64'
-    configuration: 'release'
+    configuration: 'release_DLL'
     msbuildArchitecture: 'x64'
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
 

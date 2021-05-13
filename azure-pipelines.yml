@@ -3,19 +3,19 @@ trigger:
 
 strategy:
   matrix:
-    #linux:
-    #  imageName: 'ubuntu-latest'
-    #  cmakeTarget: 'Unix Makefiles'
-    #  sourceFolder: 'bin/'
-    #  sourceFile: 'libassimp.so'
-    #  targetFile: 'Assimp64.so'
-    #  artifactName : 'linux_x64'
+    linux:
+      imageName: 'ubuntu-latest'
+      cmakeTarget: 'Unix Makefiles'
+      sourceFolder: 'bin/'
+      sourceFile: 'libassimp.so'
+      targetFile: 'Assimp64.so'
+      artifactName : 'linux_x64'
     windows:
       imageName: 'windows-latest'
       cmakeTarget: 'Visual Studio 16 2019'
-      sourceFolder: 'bin/Release/'
-      sourceFile: 'assimp-vc142-mt.dll'
-      targetFile: 'Assimp64.dll'
+      sourceFolder: 'lib/VC9/Release_DLL/x64/'
+      sourceFile: 'crnlib.dll'
+      targetFile: 'crnlib.dll'
       artifactName : 'windows_x64'
 
 pool:
@@ -26,25 +26,14 @@ steps:
   inputs:
     workingDirectory: 
     cmakeArgs: 'CMakeLists.txt -G "$(cmakeTarget)"'
-  condition: eq( variables['Agent.OS'], 'Linux' )
-
-- task: CmdLine@2
-  inputs:
-    script: 'tree /F /A'
 
 - task: VSBuild@1
   inputs:
-    solution: 'crn.2010.sln'
+    solution: 'crnlib.sln'
     vsVersion: '16.0'
     platform: 'x64'
     configuration: 'release_DLL'
     msbuildArchitecture: 'x64'
-  condition: eq( variables['Agent.OS'], 'Windows_NT' )
-
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: '$(ANDROID_NDK_PATH)/ndk-build'
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
 
 - task: Bash@3
@@ -52,9 +41,32 @@ steps:
     targetType: 'inline'
     script: |
       make
-      dir .
+      tree
   condition: eq( variables['Agent.OS'], 'Linux' )
-  
-- task: CmdLine@2
+
+- task: CopyFiles@2
   inputs:
-    script: 'tree /F /A'
+    SourceFolder: '$(sourceFolder)'
+    Contents: '$(sourceFile)'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: '$(ANDROID_NDK_PATH)/ndk-build'
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'libs/armeabi-v7a'
+    Contents: 'libcrnlib.so'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+    CleanTargetFolder: true
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'android_ARMv7'
+    publishLocation: 'Container'
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )

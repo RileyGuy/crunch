@@ -26,6 +26,7 @@ steps:
   inputs:
     workingDirectory: 
     cmakeArgs: 'CMakeLists.txt -G "$(cmakeTarget)"'
+  condition: eq( variables['Agent.OS'], 'Linux' )
 
 - task: CmdLine@2
   inputs:
@@ -33,7 +34,7 @@ steps:
 
 - task: VSBuild@1
   inputs:
-    solution: 'crnlib.sln'
+    solution: 'crn.2010.sln'
     vsVersion: '16.0'
     platform: 'x64'
     configuration: 'release_DLL'

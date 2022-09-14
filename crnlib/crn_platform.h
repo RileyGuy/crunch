@@ -35,7 +35,8 @@ const bool c_crnlib_big_endian_platform = !c_crnlib_little_endian_platform;
 #if CRNLIB_USE_WIN32_API
 #define CRNLIB_BREAKPOINT DebugBreak();
 #define CRNLIB_BUILTIN_EXPECT(c, v) c
-#elif defined(__GNUC__) && !defined(ANDROID)
+// #elif defined(__GNUC__) && !defined(ANDROID) <-- This breakpoint causes a compiler error on aarch64, so we'll use the following one instead:
+#elif defined(__GNUC__) && !defined(ANDROID) && ( defined(__i386__) || defined(__x86_64__) ) // Thanks to https://github.com/FlameSoulis for discovering this and to https://github.com/liny-fox for improving it.
 #define CRNLIB_BREAKPOINT asm("int $3");
 #define CRNLIB_BUILTIN_EXPECT(c, v) __builtin_expect(c, v)
 #else
